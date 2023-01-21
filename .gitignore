@@ -1,2 +1,5 @@
 /vendor/
 /.idea/
+/uploads/
+/.phpunit.result.cache
+/index.php
