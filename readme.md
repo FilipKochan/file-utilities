@@ -1,6 +1,4 @@
 # File Utilities
---
-
 Install with:
 ```shell
 composer require filipkochan/file-utilities
