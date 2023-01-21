@@ -75,8 +75,10 @@ class FileUploader {
     }
 
     private function validate_captcha(): bool {
+        if (!$this->captcha_secret) {
+            return true;
+        }
         try {
-
             $client = new Client();
             $res = $client->post('https://www.google.com/recaptcha/api/siteverify', [
                 'form_params' => [
@@ -94,8 +96,12 @@ class FileUploader {
             return false;
         }
     }
+    public function current_upload_status(): UploadStatus {
+        return $this->upload_status;
+    }
+
     public function handle_upload(): void {
-        if (!key_exists('sent', $_POST)) {
+        if (!key_exists('sent', $_POST) || !$_POST['sent']) {
             return;
         }
 
@@ -155,6 +161,8 @@ class FileUploader {
         $f = $this->file_prefix;
         $e = $this->extension;
         $c = static::$count;
+        $gr = $site_key ? "g-recaptcha" : "";
+        $script = self::$count === 1 || $site_key ? '<script defer src="https://www.google.com/recaptcha/api.js"></script>' : "";
         return <<<STR
                 <form action="$action" id="_form_$c" method="post" enctype="multipart/form-data" class="d-flex flex-column gap-3 align-items-start">
                     <div>
@@ -166,9 +174,9 @@ class FileUploader {
                         <input id="_pwd_$c" type="password" name="pwd" placeholder="heslo" class="form-control">
                     </div>
                     <input type="hidden" name="sent" value="true" />
-                    <button class="g-recaptcha btn btn-primary" data-sitekey="$site_key" data-callback='onSubmit$c' data-action='submit'>Nahrát</button>
+                    <button class="$gr btn btn-primary" data-sitekey="$site_key" data-callback='onSubmit$c' data-action='submit'>Nahrát</button>
                 </form>
-                <script defer src="https://www.google.com/recaptcha/api.js"></script>
+                $script
                 <script>
                     function onSubmit$c(token) {
                         document.getElementById("_form_$c").submit();
