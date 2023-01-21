@@ -47,7 +47,7 @@ class CalendarFileValidator implements FileValidator
         return "<p>Formát souboru: tabulka se sloupci " .
             implode(", ", array_map(function ($item) {
                 return "<code>" . $item->name . "</code>";
-                }, $this->fields)) . ". <br />Musí začínat od sloupce <code>A</code> na libovolném řádku</p>";
+                }, $this->fields)) . ". <br />Musí začínat od sloupce <code>A</code> na libovolném řádku.</p>";
     }
 
     public function get_error_help(): string

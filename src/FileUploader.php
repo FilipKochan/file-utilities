@@ -160,12 +160,14 @@ class FileUploader {
     public function generate_form(string $action, string $site_key): string {
         $f = $this->file_prefix;
         $e = $this->extension;
-        $c = static::$count;
+        $c = self::$count;
         $gr = $site_key ? "g-recaptcha" : "";
         $script = self::$count === 1 || $site_key ? '<script defer src="https://www.google.com/recaptcha/api.js"></script>' : "";
+        $rules = $this->file_validator->get_rules();
         return <<<STR
                 <form action="$action" id="_form_$c" method="post" enctype="multipart/form-data" class="d-flex flex-column gap-3 align-items-start">
                     <div>
+                        $rules
                         <label for="_file_input_$c">Zvolte soubor ve formátu <code>$e</code>.</label>
                         <input id="_file_input_$c" type="file" name="$f" accept=".$e" class="form-control">
                     </div>
