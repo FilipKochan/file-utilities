@@ -4,7 +4,6 @@ namespace FilipKochan\FileUtilities;
 
 use DateTime;
 use DateTimeZone;
-use Dotenv\Dotenv;
 use Exception;
 use IntlDateFormatter;
 use GuzzleHttp\Client;
@@ -16,14 +15,18 @@ class FileUploader {
     private string $extension;
     private UploadStatus $upload_status;
     private static int $count = 0;
-    public function __construct(string $upload_directory, string $file_prefix, string $extension)
+    private string $captcha_secret;
+    private string $upload_password;
+    public function __construct(string $upload_directory, string $file_prefix,
+                                string $extension, string $captcha_secret,
+                                string $upload_password)
     {
         $this->file_prefix = $file_prefix;
         $this->upload_directory = $upload_directory;
         $this->extension = $extension;
+        $this->captcha_secret = $captcha_secret;
+        $this->upload_password = $upload_password;
         $this->upload_status = UploadStatus::UPLOAD_IDLE;
-        $d = Dotenv::createImmutable(__DIR__);
-        $d->load();
         static::$count++;
     }
 
@@ -75,7 +78,7 @@ class FileUploader {
             $client = new Client();
             $res = $client->post('https://www.google.com/recaptcha/api/siteverify', [
                 'form_params' => [
-                    'secret' => $_ENV['CAPTCHA_SECRET'],
+                    'secret' => $this->captcha_secret,
                     'response' => $_POST['g-recaptcha-response'],
                 ]
             ]);
@@ -99,9 +102,8 @@ class FileUploader {
             return;
         }
 
-        if (!key_exists("UPLOAD_PASSWORD", $_ENV)
-            || !key_exists('pwd', $_POST)
-            || ($_ENV['UPLOAD_PASSWORD'] !== $_POST['pwd'])) {
+        if (!key_exists('pwd', $_POST)
+            || ($this->upload_password !== $_POST['pwd'])) {
             $this->upload_status = UploadStatus::UPLOAD_UNAUTHORIZED;
             return;
         }
