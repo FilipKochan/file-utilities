@@ -17,15 +17,17 @@ class FileUploader {
     private static int $count = 0;
     private string $captcha_secret;
     private string $upload_password;
+    private FileValidator $file_validator;
     public function __construct(string $upload_directory, string $file_prefix,
-                                string $extension, string $captcha_secret,
-                                string $upload_password)
+                                string $extension, FileValidator $file_validator,
+                                string $captcha_secret, string $upload_password)
     {
         $this->file_prefix = $file_prefix;
         $this->upload_directory = $upload_directory;
         $this->extension = $extension;
         $this->captcha_secret = $captcha_secret;
         $this->upload_password = $upload_password;
+        $this->file_validator = $file_validator;
         $this->upload_status = UploadStatus::UPLOAD_IDLE;
         static::$count++;
     }
@@ -114,6 +116,11 @@ class FileUploader {
         }
 
         try {
+            if (!$this->file_validator->is_valid($f['tmp_name'])) {
+                $this->upload_status = UploadStatus::UPLOAD_WRONG_FORMAT;
+                return;
+            }
+
             if (!is_dir($this->upload_directory)) {
                 mkdir($this->upload_directory);
             }
@@ -138,6 +145,8 @@ class FileUploader {
             UploadStatus::UPLOAD_ERROR => "<div class='alert alert-danger'>Během nahrávání souboru nastala chyba.</div>",
             UploadStatus::UPLOAD_UNAUTHORIZED => "<div class='alert alert-danger'>Neplatné heslo.</div>",
             UploadStatus::UPLOAD_CAPTCHA_FAILED => "<div class='alert alert-danger'>Jste robot.</div>",
+            UploadStatus::UPLOAD_WRONG_FORMAT => "<div class='alert alert-danger'>Vámi nahraný soubor není ve správném formátu." .
+                $this->file_validator->get_error_help() . "</div>",
             default => "",
         };
     }
