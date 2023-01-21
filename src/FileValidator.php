@@ -13,7 +13,7 @@ interface FileValidator {
     /**
      * @return string description of the uploaded file requirements
      */
-    public function get_description(): string;
+    public function get_rules(): string;
 
     /**
      * get help for the last invalid file
