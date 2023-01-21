@@ -1,0 +1,24 @@
+{
+    "name": "filipkochan/file-utilities",
+    "description": "This package provides utilities for uploading files and working with excel data.",
+    "type": "library",
+    "require": {
+        "phpoffice/phpspreadsheet": "^1.26",
+        "ext-intl": "*",
+        "vlucas/phpdotenv": "^5.5",
+        "guzzlehttp/guzzle": "^7.5",
+        "php": ">=8.1"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "FilipKochan\\FileUtilities\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "FilipKochan",
+            "email": "filda.koch@gmail.com"
+        }
+    ]
+}
