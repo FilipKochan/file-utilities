@@ -18,7 +18,7 @@ class FileUploaderTest extends TestCase
         $this->uploader = new FileUploader(self::$dir,
             "uploaded",
             "xlsx",
-            new CalendarFileValidator(array(new TableHeaderField("date"), new TableHeaderField("title"))),
+            new CalendarFileValidator(array(new TableHeaderField("date"), new TableHeaderField("title")), null),
             "",
             "password1");
     }

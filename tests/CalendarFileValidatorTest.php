@@ -17,7 +17,7 @@ class CalendarFileValidatorTest extends TestCase
             new TableHeaderField("title"),
             new TableHeaderField("location"),
         );
-        $this->cfv = new CalendarFileValidator($this->fields);
+        $this->cfv = new CalendarFileValidator($this->fields, null);
     }
 
     public function testCanDetectTruePositive() {
@@ -33,9 +33,14 @@ class CalendarFileValidatorTest extends TestCase
     }
 
     public function testDisplaysFieldsInHint() {
-        $hint = $this->cfv->get_error_help();
+        $hint = $this->cfv->get_rules();
         foreach ($this->fields as $f) {
             $this->assertStringContainsString($f->name, $hint);
         }
+    }
+
+    public function testDisplaysNoErrorsWhenIdle() {
+        $hint = (new CalendarFileValidator($this->fields, null))->get_error_help();
+        $this->assertEquals("", $hint);
     }
 }
