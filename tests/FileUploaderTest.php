@@ -35,9 +35,9 @@ class FileUploaderTest extends TestCase
 
     public function testCanGenerateForm() {
         $f = trim($this->uploader->generate_form('index.php', ""));
-        $this->assertStringStartsWith("<form ", $f);
-        $this->assertStringContainsString("submit", $f);
-        $this->assertStringContainsString("</form>", $f);
+        self::assertStringStartsWith("<form ", $f);
+        self::assertStringContainsString("submit", $f);
+        self::assertStringContainsString("</form>", $f);
     }
 
     public function testValidatesPassword() {
@@ -46,31 +46,31 @@ class FileUploaderTest extends TestCase
             unset($_POST['pwd']);
         }
         $this->uploader->handle_upload();
-        $this->assertEquals(UploadStatus::UPLOAD_UNAUTHORIZED,
+        self::assertEquals(UploadStatus::UPLOAD_UNAUTHORIZED,
             $this->uploader->current_upload_status(),
             "upload status unauthorized");
 
         $_POST['pwd'] = '$#^@*@__wrong_password__';
         $this->uploader->handle_upload();
-        $this->assertEquals(UploadStatus::UPLOAD_UNAUTHORIZED,
+        self::assertEquals(UploadStatus::UPLOAD_UNAUTHORIZED,
             $this->uploader->current_upload_status());
 
         $_POST['pwd'] = 'password1';
         $this->uploader->handle_upload();
-        $this->assertNotEquals(UploadStatus::UPLOAD_UNAUTHORIZED,
+        self::assertNotEquals(UploadStatus::UPLOAD_UNAUTHORIZED,
             $this->uploader->current_upload_status());
     }
 
     public function testIgnoresUntouchedForm() {
         unset($_POST['sent']);
         $this->uploader->handle_upload();
-        $this->assertEquals(UploadStatus::UPLOAD_IDLE, $this->uploader->current_upload_status());
+        self::assertEquals(UploadStatus::UPLOAD_IDLE, $this->uploader->current_upload_status());
     }
 
     public function testCanHandleNoFile() {
         $_POST['sent'] = true;
         $_POST['pwd'] = 'password1';
         $this->uploader->handle_upload();
-        $this->assertEquals(UploadStatus::UPLOAD_NOFILE, $this->uploader->current_upload_status());
+        self::assertEquals(UploadStatus::UPLOAD_NOFILE, $this->uploader->current_upload_status());
     }
 }

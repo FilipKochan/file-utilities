@@ -21,26 +21,26 @@ class CalendarFileValidatorTest extends TestCase
     }
 
     public function testCanDetectTruePositive() {
-        $this->assertTrue($this->cfv->is_valid(__DIR__."/../data/calendar.xlsx"));
-        $this->assertTrue($this->cfv->is_valid(__DIR__."/../data/calendar2.xlsx"));
-        $this->assertTrue($this->cfv->is_valid(__DIR__."/../data/calendar3.xlsx"));
+        self::assertTrue($this->cfv->is_valid(__DIR__."/../data/calendar.xlsx"));
+        self::assertTrue($this->cfv->is_valid(__DIR__."/../data/calendar2.xlsx"));
+        self::assertTrue($this->cfv->is_valid(__DIR__."/../data/calendar3.xlsx"));
     }
 
     public function testCanDetectTrueNegative() {
-        $this->assertFalse($this->cfv->is_valid(__DIR__.'/../data/calendar4.xlsx'));
-        $this->assertFalse($this->cfv->is_valid(__DIR__.'/../data/calendar5.xlsx'));
-        $this->assertFalse($this->cfv->is_valid(__DIR__.'/../data/calendar6.xlsx'));
+        self::assertFalse($this->cfv->is_valid(__DIR__.'/../data/calendar4.xlsx'));
+        self::assertFalse($this->cfv->is_valid(__DIR__.'/../data/calendar5.xlsx'));
+        self::assertFalse($this->cfv->is_valid(__DIR__.'/../data/calendar6.xlsx'));
     }
 
     public function testDisplaysFieldsInHint() {
         $hint = $this->cfv->get_rules();
         foreach ($this->fields as $f) {
-            $this->assertStringContainsString($f->name, $hint);
+            self::assertStringContainsString($f->name, $hint);
         }
     }
 
     public function testDisplaysNoErrorsWhenIdle() {
         $hint = (new CalendarFileValidator($this->fields, null))->get_error_help();
-        $this->assertEquals("", $hint);
+        self::assertEquals("", $hint);
     }
 }
