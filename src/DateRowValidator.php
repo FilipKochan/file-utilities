@@ -2,6 +2,7 @@
 
 namespace FilipKochan\FileUtilities;
 
+use Exception;
 use PhpOffice\PhpSpreadsheet as P;
 use PhpOffice\PhpSpreadsheet\Worksheet\Row;
 
@@ -23,28 +24,10 @@ class DateRowValidator implements RowValidator
                     if ($cell->getColumn() !== $this->date_column) {
                         continue;
                     }
-
                     $v = $cell->getCalculatedValue();
-//                    echo $v;
-
-                    if (is_numeric($v)) {
-                        $UNIX_DATE = (int)(($v - 25569) * 86400);
-                        \DateTime::createFromFormat("U", $UNIX_DATE, new \DateTimeZone("Europe/Prague"));
-                        return true;
-                    }
-
-                    $dates = explode("-", $v);
-
-                    foreach ($dates as $date) {
-                        $date = preg_replace("/\s/", "", $date);
-                        if (
-                            (\DateTime::createFromFormat('j/n/Y', $date, new \DateTimeZone("Europe/Prague"))) ||
-                            (\DateTime::createFromFormat('j.n.Y', $date, new \DateTimeZone("Europe/Prague"))) ||
-                            (\DateTime::createFromFormat('j/n', $date, new \DateTimeZone("Europe/Prague"))) ||
-                            (\DateTime::createFromFormat('j.n.', $date, new \DateTimeZone("Europe/Prague")))
-                        ) {/* ok */} else { return false; }
-                    }
-                } catch (\Exception) {
+                    DateFunctions::parse_date($v);
+                }
+                catch (InvalidDateFormatException) {
                     return false;
                 }
             }

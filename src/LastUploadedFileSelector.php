@@ -10,7 +10,7 @@ class LastUploadedFileSelector implements FileSelector {
     public function __construct(string $file_prefix) {
         $this->file_prefix = $file_prefix;
     }
-    public function get_filename(string $directory): string
+    public function get_filename(string $directory): string|null
     {
         if (!is_dir($directory)) {
             return "";
