@@ -44,13 +44,13 @@ class DateFunctions
 
     /**
      * accepts formats `dd.mm.[yyyy][-dd.mm.[yyyy]]` and `dd/mm[/yyyy][-dd/mm[/yyyy]]`
-     * @param string $date_string
+     * @param string|int $date_original string or excel calculated value
      * @param IntlDateFormatter $formatter
      * @return string
      * @throws InvalidDateFormatException when date couldn't be formatted
      */
-    public static function format_date(string $date_string, IntlDateFormatter $formatter): string {
-        $dates = self::parse_date($date_string);
+    public static function format_date(string|int $date_original, IntlDateFormatter $formatter): string {
+        $dates = self::parse_date($date_original);
         return implode(" - ", array_map(function ($date) use ($formatter) {
             return $formatter->format($date);
         }, $dates));
