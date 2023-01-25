@@ -11,12 +11,12 @@ class DateFunctions
     private function __construct() {}
 
     /**
-     * @param string|int $date_original date string or excel calculated value
+     * @param string|int|null $date_original date string or excel calculated value
      * @param string $timezone
      * @return DateTime[]
      * @throws InvalidDateFormatException when date couldn't be formatted
      */
-    public static function parse_date(string|int $date_original, string $timezone = "Europe/Prague"): array {
+    public static function parse_date(string|int|null $date_original, string $timezone = "Europe/Prague"): array {
         if (is_numeric($date_original)) {
             $UNIX_DATE = (int)(($date_original - 25569) * 86400);
             if (($d = DateTime::createFromFormat("U", $UNIX_DATE, new DateTimeZone($timezone)))) {
@@ -44,12 +44,12 @@ class DateFunctions
 
     /**
      * accepts formats `dd.mm.[yyyy][-dd.mm.[yyyy]]` and `dd/mm[/yyyy][-dd/mm[/yyyy]]`
-     * @param string|int $date_original string or excel calculated value
+     * @param string|int|null $date_original string or excel calculated value
      * @param IntlDateFormatter $formatter
      * @return string
      * @throws InvalidDateFormatException when date couldn't be formatted
      */
-    public static function format_date(string|int $date_original, IntlDateFormatter $formatter): string {
+    public static function format_date(string|int|null $date_original, IntlDateFormatter $formatter): string {
         $dates = self::parse_date($date_original);
         return implode(" - ", array_map(function ($date) use ($formatter) {
             return $formatter->format($date);
