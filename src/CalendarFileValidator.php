@@ -56,6 +56,17 @@ class CalendarFileValidator implements FileValidator
             $this->invalid_rows = array();
             if ($this->row_validator) {
                 foreach ($sheet->getRowIterator($start_index) as $row) {
+                    $is_empty = true;
+                    foreach ($row->getCellIterator('A', chr(ord('A') + count($this->fields) - 1)) as $cell) {
+                        if ($cell->getFormattedValue()) {
+                            $is_empty = false;
+                            break;
+                        }
+                    }
+                    if ($is_empty) {
+                        break;
+                    }
+
                     if (!$this->row_validator->is_valid($row)) {
                         $this->invalid_rows[] = $row->getRowIndex();
                     }
