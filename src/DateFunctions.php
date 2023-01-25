@@ -17,6 +17,9 @@ class DateFunctions
      * @throws InvalidDateFormatException when date couldn't be formatted
      */
     public static function parse_date(string|int|null $date_original, string $timezone = "Europe/Prague"): array {
+        if (is_null($date_original)) {
+            throw new InvalidDateFormatException("date must not be null");
+        }
         if (is_numeric($date_original)) {
             $UNIX_DATE = (int)(($date_original - 25569) * 86400);
             if (($d = DateTime::createFromFormat("U", $UNIX_DATE, new DateTimeZone($timezone)))) {
