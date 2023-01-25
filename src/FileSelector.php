@@ -8,5 +8,5 @@ interface FileSelector
      * @param string $directory
      * @return string
      */
-    public function get_filename(string $directory): string;
+    public function get_filename(string $directory): string|null;
 }
