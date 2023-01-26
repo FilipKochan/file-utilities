@@ -16,26 +16,20 @@ class DateRowValidator implements RowValidator
         $this->date_column = $date_column;
     }
     public function is_valid(Row $row): bool {
-        $prev = P\Calculation\Functions::getReturnDateType();
-        P\Calculation\Functions::setReturnDateType(P\Calculation\Functions::RETURNDATE_PHP_OBJECT);
-        try {
-            foreach ($row->getCellIterator() as $cell) {
-                try {
-                    if ($cell->getColumn() !== $this->date_column) {
-                        continue;
-                    }
-                    $v = $cell->getCalculatedValue();
-                    DateFunctions::parse_date($v);
+        foreach ($row->getCellIterator() as $cell) {
+            try {
+                if ($cell->getColumn() !== $this->date_column) {
+                    continue;
                 }
-                catch (InvalidDateFormatException) {
-                    return false;
-                }
+                $v = $cell->getCalculatedValue();
+                DateFunctions::parse_date($v);
             }
-
-            return true;
-        } finally {
-            P\Calculation\Functions::setReturnDateType($prev);
+            catch (InvalidDateFormatException|P\Calculation\Exception|P\Exception) {
+                return false;
+            }
         }
+
+        return true;
     }
 
     private function date_formats(): string {
