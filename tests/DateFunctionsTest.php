@@ -15,7 +15,7 @@ class DateFunctionsTest extends TestCase
             foreach ($dates as $date) {
                 self::assertNotEmpty(DateFunctions::parse_date($date), "date '" . $date . "' should be valid");
             }
-        } catch (InvalidDateFormatException) {self::fail("date '" . $date . "' should be valid");}
+        } catch (InvalidDateFormatException $e) {self::fail("date '" . $date . "' should be valid");}
     }
 
     public function testParse_date_invalid()
@@ -26,7 +26,7 @@ class DateFunctionsTest extends TestCase
             try {
                 echo DateFunctions::parse_date($date)[0]->format('r');
                 self::fail("date '" . $date . "' should be invalid");
-            } catch (InvalidDateFormatException) {self::assertTrue(true, "date '" . $date . "' should be invalid");}
+            } catch (InvalidDateFormatException $e) {self::assertTrue(true, "date '" . $date . "' should be invalid");}
         }
     }
 
@@ -49,7 +49,7 @@ class DateFunctionsTest extends TestCase
         foreach ($dates as $date => $should_contain) {
             try {
                 self::assertStringContainsString($should_contain, DateFunctions::format_date($date, $f));
-            } catch (InvalidDateFormatException) {self::fail();}
+            } catch (InvalidDateFormatException $e) {self::fail();}
         }
     }
 }

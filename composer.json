@@ -6,7 +6,8 @@
         "phpoffice/phpspreadsheet": "^1.26",
         "ext-intl": "*",
         "guzzlehttp/guzzle": "^7.5",
-        "php": ">=8.1"
+        "php": ">=7.4",
+        "ext-json": "*"
     },
     "scripts": {
         "test": [

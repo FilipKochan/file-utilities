@@ -2,11 +2,11 @@
 
 namespace FilipKochan\FileUtilities;
 
-enum FileValidationStatus
+class FileValidationStatus
 {
-    case FILE_INVALID_ROW;
-    case FILE_IDLE;
-    case FILE_SUCCESS;
-    case FILE_INCORRECTLY_FORMATTED;
-    case FILE_ERROR;
+    const FILE_INVALID_ROW = "FILE_INVALID_ROW ";
+    const FILE_IDLE = "FILE_IDLE";
+    const FILE_SUCCESS = "FILE_SUCCESS";
+    const FILE_INCORRECTLY_FORMATTED = "FILE_INCORRECTLY_FORMATTED";
+    const FILE_ERROR = "FILE_ERROR";
 }

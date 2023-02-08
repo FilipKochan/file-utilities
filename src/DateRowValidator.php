@@ -27,7 +27,7 @@ class DateRowValidator implements RowValidator
                     $v = $cell->getCalculatedValue();
                     DateFunctions::parse_date($v);
                 }
-                catch (InvalidDateFormatException) {
+                catch (InvalidDateFormatException $e) {
                     return false;
                 }
             }

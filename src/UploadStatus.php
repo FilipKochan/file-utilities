@@ -1,12 +1,12 @@
 <?php
 
 namespace FilipKochan\FileUtilities;
-enum UploadStatus {
-    case UPLOAD_IDLE;
-    case UPLOAD_ERROR;
-    case UPLOAD_SUCCESS;
-    case UPLOAD_NOFILE;
-    case UPLOAD_UNAUTHORIZED;
-    case UPLOAD_CAPTCHA_FAILED;
-    case UPLOAD_WRONG_FORMAT;
+class UploadStatus {
+    const UPLOAD_IDLE = "UPLOAD_IDLE";
+    const UPLOAD_ERROR = "UPLOAD_ERROR";
+    const UPLOAD_SUCCESS = "UPLOAD_SUCCESS";
+    const UPLOAD_NO_FILE = "UPLOAD_NO_FILE";
+    const UPLOAD_UNAUTHORIZED = "UPLOAD_UNAUTHORIZED";
+    const UPLOAD_CAPTCHA_FAILED = "UPLOAD_CAPTCHA_FAILED";
+    const UPLOAD_WRONG_FORMAT = "UPLOAD_WRONG_FORMAT";
 }

@@ -6,7 +6,7 @@ interface FileSelector
     /**
      * traverses the directory and selects a file to be used
      * @param string $directory
-     * @return string
+     * @return ?string
      */
-    public function get_filename(string $directory): string|null;
+    public function get_filename(string $directory): ?string;
 }

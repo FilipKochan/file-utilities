@@ -14,9 +14,9 @@ class TableHeaderField
     /**
      * @param string $name name of the column
      * @param string $width desired column width in standard CSS format
-     * @param FieldMapper|null $mapper transforms the raw value of the field
+     * @param ?FieldMapper $mapper transforms the raw value of the field
      */
-    public function __construct(string $name, string $width = "", FieldMapper|null $mapper = null)
+    public function __construct(string $name, string $width = "", ?FieldMapper $mapper = null)
     {
         $this->name = $name;
         $this->width = $width;

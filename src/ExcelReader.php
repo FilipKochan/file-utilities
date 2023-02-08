@@ -14,7 +14,7 @@ class ExcelReader {
     private int $row;
     private int $data_start;
     private array $fields;
-    private Worksheet|null $sheet;
+    private ?Worksheet $sheet;
     private FileSelector $fs;
     private string $files_directory;
     private static Xlsx $reader;
@@ -33,7 +33,7 @@ class ExcelReader {
                                 string $directory,
                                 array $fields,
                                 FileSelector $fs,
-                                RowFilter|null $rf = null)
+                                ?RowFilter $rf = null)
     {
         if (!static::$reader_set) {
             static::$reader = new Xlsx();
@@ -161,13 +161,13 @@ class ExcelReader {
                 "cs_CZ",
                 IntlDateFormatter::FULL,
                 IntlDateFormatter::SHORT,
-                timezone: new DateTimeZone("Europe/Prague")
+                new DateTimeZone("Europe/Prague")
             );
             $date = $f->format(new DateTime(explode(".", explode("_", $file)[1])[0],
                 new DateTimeZone('Europe/Prague')));
 
             return "<$tag_name>Poslední aktualizace: $date.</$tag_name>";
-        } catch (Exception) {return "";}
+        } catch (Exception $e) {return "";}
     }
 
     /**

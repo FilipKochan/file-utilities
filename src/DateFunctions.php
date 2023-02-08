@@ -16,7 +16,7 @@ class DateFunctions
      * @return DateTime[]
      * @throws InvalidDateFormatException when date couldn't be formatted
      */
-    public static function parse_date(string|int|null $date_original, string $timezone = "Europe/Prague"): array {
+    public static function parse_date($date_original, string $timezone = "Europe/Prague"): array {
         if (is_null($date_original)) {
             throw new InvalidDateFormatException("date must not be null");
         }
@@ -52,7 +52,7 @@ class DateFunctions
      * @return string
      * @throws InvalidDateFormatException when date couldn't be formatted
      */
-    public static function format_date(string|int|null $date_original, IntlDateFormatter $formatter): string {
+    public static function format_date($date_original, IntlDateFormatter $formatter): string {
         $dates = self::parse_date($date_original);
         return implode(" - ", array_map(function ($date) use ($formatter) {
             return $formatter->format($date);

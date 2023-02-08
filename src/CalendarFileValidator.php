@@ -8,15 +8,15 @@ class CalendarFileValidator implements FileValidator
 {
     private array $fields;
     private static Xlsx $reader;
-    private RowValidator|null $row_validator;
-    private FileValidationStatus $status;
+    private ?RowValidator $row_validator;
+    private string $status;
     private array $invalid_rows;
     private static bool $has_reader = false;
 
     /**
      * @param TableHeaderField[] $fields
      */
-    public function __construct(array $fields, RowValidator|null $row_validator = null) {
+    public function __construct(array $fields, ?RowValidator $row_validator = null) {
         if (!self::$has_reader) {
             self::$reader = new Xlsx();
             self::$has_reader = true;
@@ -80,7 +80,7 @@ class CalendarFileValidator implements FileValidator
 
             $this->status = FileValidationStatus::FILE_SUCCESS;
             return true;
-        } catch (\Exception) {
+        } catch (\Exception $e) {
             $this->status = FileValidationStatus::FILE_ERROR;
             return false;
         }
@@ -98,22 +98,25 @@ class CalendarFileValidator implements FileValidator
 
     public function get_error_help(): string
     {
-        return match($this->status) {
-            FileValidationStatus::FILE_INCORRECTLY_FORMATTED =>
-                "<p>Ujistěte se, že nahrávaný soubor obsahuje tabulku se sloupci<ul>".
+        switch ($this->status) {
+            case FileValidationStatus::FILE_INCORRECTLY_FORMATTED:
+                return "<p>Ujistěte se, že nahrávaný soubor obsahuje tabulku se sloupci<ul>".
                 implode("\n", array_map(function ($item) {
                     return "<li><code>" . $item->name . "</code></li>";
                 }, $this->fields)) .
-                "</ul>v tomto pořadí.</p>",
-            FileValidationStatus::FILE_ERROR => "<p>Při nahrávání souboru nastala chyba. Zkuste to prosím později.</p>",
-            FileValidationStatus::FILE_SUCCESS,
-            FileValidationStatus::FILE_IDLE => "",
-            FileValidationStatus::FILE_INVALID_ROW =>
-            ($this->row_validator->get_error_help()).
-                "<p>na řádcích:</p>
-             <ul>".
-                    implode("\n", array_map(function ($item){return "<li><code>$item</code></li>";},$this->invalid_rows)).
-            "</ul>",
-        };
+                "</ul>v tomto pořadí.</p>";
+            case FileValidationStatus::FILE_ERROR:
+                return "<p>Při nahrávání souboru nastala chyba. Zkuste to prosím později.</p>";
+            case FileValidationStatus::FILE_INVALID_ROW:
+                return ($this->row_validator->get_error_help()).
+                    "<p>na řádcích:</p>
+                    <ul>".
+                            implode("\n", array_map(function ($item){return "<li><code>$item</code></li>";},$this->invalid_rows)).
+                    "</ul>";
+            case FileValidationStatus::FILE_SUCCESS:
+            case FileValidationStatus::FILE_IDLE:
+            default:
+                return "";
+        }
     }
 }
