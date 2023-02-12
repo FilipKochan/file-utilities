@@ -22,15 +22,13 @@ class ExcelReader {
     private RowFilter $rf;
 
     /**
-     * @param string $file_prefix
      * @param string $directory directory of files
      * @param TableHeaderField[] $fields table columns
      * @param FileSelector $fs this is used to select current calendar from a directory
      * @param RowFilter|null $rf which rows will be hidden
      * @throws Exception
      */
-    public function __construct(string $file_prefix,
-                                string $directory,
+    public function __construct(string $directory,
                                 array $fields,
                                 FileSelector $fs,
                                 ?RowFilter $rf = null)
@@ -57,7 +55,7 @@ class ExcelReader {
             }
         } catch (\PhpOffice\PhpSpreadsheet\Reader\Exception $exception) {
             echo $exception->getMessage();
-            throw new Exception("<p>Nelze otevřít soubor <code>" . basename($file_prefix) . "</code> - existuje?</p>");
+            throw new Exception("<p>Při načítání kalendáře došlo k chybě.</p>");
         }
         $ds = $this->find_data_start();
         $this->row = $ds;
