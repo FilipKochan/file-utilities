@@ -144,10 +144,13 @@ class FileUploader {
         } catch (Exception $e) {$this->upload_status = UploadStatus::UPLOAD_ERROR;}
     }
 
-    public function get_upload_status(): string {
+    public function get_upload_status(?string $calendarVisitLink = null): string {
         switch ($this->upload_status) {
             case UploadStatus::UPLOAD_NO_FILE: return "<div class='alert alert-info'>Nebyl zvolen žádný soubor k nahrání.</div>";
-            case UploadStatus::UPLOAD_SUCCESS: return "<div class='alert alert-success'>Soubor byl úspěšně nahrán.</div>";
+            case UploadStatus::UPLOAD_SUCCESS: return "<div class='alert alert-success'>Soubor byl úspěšně nahrán."
+                . ($calendarVisitLink
+                    ? "<br/>Pro zobrazení nového kalendáře můžete kliknout <a href='$calendarVisitLink'>zde</a>."
+                    : "") ."</div>";
             case UploadStatus::UPLOAD_ERROR: return "<div class='alert alert-danger'>Během nahrávání souboru nastala chyba.</div>";
             case UploadStatus::UPLOAD_UNAUTHORIZED: return "<div class='alert alert-danger'>Neplatné heslo.</div>";
             case UploadStatus::UPLOAD_CAPTCHA_FAILED: return "<div class='alert alert-danger'>Jste robot.</div>";

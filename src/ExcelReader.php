@@ -147,7 +147,7 @@ class ExcelReader {
 
     /**
      * @param string $tag_name
-     * @return string last modified date in format "<$tag_name>aktualizace: 'datum aktualizace'&lt;/$tag_name>".
+     * @return string last modified date in format "aktualizace: <$tag_name>'datum aktualizace'&lt;/$tag_name>".
      * if date couldn't be found, returns an empty string
      */
     public function get_modified_date(string $tag_name = "i") : string {
@@ -164,7 +164,7 @@ class ExcelReader {
             $date = $f->format(new DateTime(explode(".", explode("_", $file)[1])[0],
                 new DateTimeZone('Europe/Prague')));
 
-            return "<$tag_name>Poslední aktualizace: $date.</$tag_name>";
+            return "<p>Poslední aktualizace: <$tag_name>$date</$tag_name>.</p>";
         } catch (Exception $e) {return "";}
     }
 
