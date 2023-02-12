@@ -13,7 +13,7 @@ class FileUploader {
     private string $upload_directory;
     private string $file_prefix;
     private string $extension;
-    private UploadStatus $upload_status;
+    private string $upload_status;
     private static int $count = 0;
     private string $captcha_secret;
     private string $upload_password;
@@ -47,14 +47,14 @@ class FileUploader {
                 if (is_dir($f)) {
                     continue;
                 }
-                if (str_starts_with($f, $this->file_prefix)) {
+                if (preg_match("/^".$this->file_prefix."/", $f)) {
                     try {
                         $dt = new DateTime(explode(".", explode("_", $f)[1])[0],
                             new DateTimeZone('Europe/Prague'));
                         if (!$last || ($dt > $last)) {
                             $last = $dt;
                         }
-                    } catch (Exception) {}
+                    } catch (Exception $e) {}
                 }
             }
             if (!$last) {
@@ -65,7 +65,7 @@ class FileUploader {
                 "cs_CZ",
                 IntlDateFormatter::FULL,
                 IntlDateFormatter::SHORT,
-                timezone: new DateTimeZone("Europe/Prague")
+                new DateTimeZone("Europe/Prague")
             );
 
             return "<p>Poslední soubor byl nahrán: <i>" . $f->format($last) . "</i>.</p>";
@@ -92,11 +92,11 @@ class FileUploader {
             }
             $data = json_decode($res->getBody());
             return !!$data->success;
-        } catch (GuzzleException) {
+        } catch (GuzzleException $e) {
             return false;
         }
     }
-    public function current_upload_status(): UploadStatus {
+    public function current_upload_status(): string {
         return $this->upload_status;
     }
 
@@ -117,7 +117,7 @@ class FileUploader {
         }
 
         if (!key_exists($this->file_prefix, $_FILES) || !($f = $_FILES[$this->file_prefix])['size']) {
-            $this->upload_status = UploadStatus::UPLOAD_NOFILE;
+            $this->upload_status = UploadStatus::UPLOAD_NO_FILE;
             return;
         }
 
@@ -141,20 +141,20 @@ class FileUploader {
 
             move_uploaded_file($f['tmp_name'], $new_filename);
             $this->upload_status = UploadStatus::UPLOAD_SUCCESS;
-        } catch (Exception) {$this->upload_status = UploadStatus::UPLOAD_ERROR;}
+        } catch (Exception $e) {$this->upload_status = UploadStatus::UPLOAD_ERROR;}
     }
 
     public function get_upload_status(): string {
-        return match ($this->upload_status) {
-            UploadStatus::UPLOAD_NOFILE => "<div class='alert alert-info'>Nebyl zvolen žádný soubor k nahrání.</div>",
-            UploadStatus::UPLOAD_SUCCESS => "<div class='alert alert-success'>Soubor byl úspěšně nahrán.</div>",
-            UploadStatus::UPLOAD_ERROR => "<div class='alert alert-danger'>Během nahrávání souboru nastala chyba.</div>",
-            UploadStatus::UPLOAD_UNAUTHORIZED => "<div class='alert alert-danger'>Neplatné heslo.</div>",
-            UploadStatus::UPLOAD_CAPTCHA_FAILED => "<div class='alert alert-danger'>Jste robot.</div>",
-            UploadStatus::UPLOAD_WRONG_FORMAT => "<div class='alert alert-danger'>Vámi nahraný soubor není ve správném formátu." .
-                $this->file_validator->get_error_help() . "</div>",
-            default => "",
-        };
+        switch ($this->upload_status) {
+            case UploadStatus::UPLOAD_NO_FILE: return "<div class='alert alert-info'>Nebyl zvolen žádný soubor k nahrání.</div>";
+            case UploadStatus::UPLOAD_SUCCESS: return "<div class='alert alert-success'>Soubor byl úspěšně nahrán.</div>";
+            case UploadStatus::UPLOAD_ERROR: return "<div class='alert alert-danger'>Během nahrávání souboru nastala chyba.</div>";
+            case UploadStatus::UPLOAD_UNAUTHORIZED: return "<div class='alert alert-danger'>Neplatné heslo.</div>";
+            case UploadStatus::UPLOAD_CAPTCHA_FAILED: return "<div class='alert alert-danger'>Jste robot.</div>";
+            case UploadStatus::UPLOAD_WRONG_FORMAT: return "<div class='alert alert-danger'>Vámi nahraný soubor není ve správném formátu." .
+                $this->file_validator->get_error_help() . "</div>";
+            default: return "";
+        }
     }
 
     public function generate_form(string $action, string $site_key): string {

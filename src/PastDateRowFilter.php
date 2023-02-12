@@ -33,6 +33,6 @@ class PastDateRowFilter implements RowFilter
                 return (double)$date->format('U') > (double)$yesterday->format('U');
             }
             return false;
-        } catch (Exception) {return false;}
+        } catch (Exception $e) {return false;}
     }
 }

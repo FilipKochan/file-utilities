@@ -71,6 +71,6 @@ class FileUploaderTest extends TestCase
         $_POST['sent'] = true;
         $_POST['pwd'] = 'password1';
         $this->uploader->handle_upload();
-        self::assertEquals(UploadStatus::UPLOAD_NOFILE, $this->uploader->current_upload_status());
+        self::assertEquals(UploadStatus::UPLOAD_NO_FILE, $this->uploader->current_upload_status());
     }
 }

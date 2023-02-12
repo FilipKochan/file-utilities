@@ -10,7 +10,7 @@ class LastUploadedFileSelector implements FileSelector {
     public function __construct(string $file_prefix) {
         $this->file_prefix = $file_prefix;
     }
-    public function get_filename(string $directory): string|null
+    public function get_filename(string $directory): ?string
     {
         if (!is_dir($directory)) {
             return "";
@@ -24,7 +24,7 @@ class LastUploadedFileSelector implements FileSelector {
                     continue;
                 }
 
-                if (str_starts_with($f, $this->file_prefix)) {
+                if (preg_match("/^".$this->file_prefix."/", $f)) {
                     $dt = new DateTime(explode(".", explode("_", $f)[1])[0],
                         new DateTimeZone('Europe/Prague'));
                     if (!$last || ($dt > $last)) {
@@ -34,7 +34,7 @@ class LastUploadedFileSelector implements FileSelector {
                 }
             }
             return $last_file;
-        } catch (Exception) {
+        } catch (Exception $e) {
             return "";
         } finally {
             closedir($d);
