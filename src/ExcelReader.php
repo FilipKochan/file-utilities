@@ -94,12 +94,17 @@ class ExcelReader {
             return $this->get_row();
         }
 
-        $idx = 0;
+        $idx = -1;
         foreach ($r->getCellIterator('A', chr(ord('A') + count($this->fields) - 1)) as $cell) {
+            $idx++;
+            if ($this->fields[$idx]->hidden) {
+                continue;
+            }
+
             if ($cell->getFormattedValue()) {
                 $row_empty = false;
             }
-            $transformed = $this->fields[$idx++]->mapper->map_field($cell);
+            $transformed = $this->fields[$idx]->mapper->map_field($cell);
             $res .= "<td>$transformed</td>";
         }
         $res .= "</tr>";
