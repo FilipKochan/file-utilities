@@ -37,7 +37,7 @@ class CalendarFileValidator implements FileValidator
                     if ($i >= count($this->fields)) {
                         break;
                     }
-                    if ($cell->getFormattedValue() !== $this->fields[$i++]->name) {
+                    if (strtoupper(trim($cell->getFormattedValue())) !== strtoupper(trim($this->fields[$i++]->name))) {
                         $is_valid = false;
                         break;
                     }
