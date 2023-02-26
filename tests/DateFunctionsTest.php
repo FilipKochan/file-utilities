@@ -15,18 +15,22 @@ class DateFunctionsTest extends TestCase
             foreach ($dates as $date) {
                 self::assertNotEmpty(DateFunctions::parse_date($date), "date '" . $date . "' should be valid");
             }
-        } catch (InvalidDateFormatException $e) {self::fail("date '" . $date . "' should be valid");}
+        } catch (InvalidDateFormatException $e) {
+            self::fail("date '" . $date . "' should be valid");
+        }
     }
 
     public function testParse_date_invalid()
     {
         $dates = ["", '1.1.x', '1-2', 'abc-def', '1 2  / 3  . 2', '2/2/3/40-1/2', '1..2', '20.3.2020.',
-            '2.6/2021', '13/1.2000', '1/14/2004/', '3//2001'];
+            '2.6/2021', '13/1.2000', '1/14/2004/', '3//2001', '11.1'];
         foreach ($dates as $date) {
             try {
                 echo DateFunctions::parse_date($date)[0]->format('r');
                 self::fail("date '" . $date . "' should be invalid");
-            } catch (InvalidDateFormatException $e) {self::assertTrue(true, "date '" . $date . "' should be invalid");}
+            } catch (InvalidDateFormatException $e) {
+                self::assertTrue(true, "date '" . $date . "' should be invalid");
+            }
         }
     }
 
@@ -49,7 +53,9 @@ class DateFunctionsTest extends TestCase
         foreach ($dates as $date => $should_contain) {
             try {
                 self::assertStringContainsString($should_contain, DateFunctions::format_date($date, $f));
-            } catch (InvalidDateFormatException $e) {self::fail();}
+            } catch (InvalidDateFormatException $e) {
+                self::fail();
+            }
         }
     }
 }

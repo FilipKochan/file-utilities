@@ -9,7 +9,8 @@ use IntlDateFormatter;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 
-class FileUploader {
+class FileUploader
+{
     private string $upload_directory;
     private string $file_prefix;
     private string $extension;
@@ -18,6 +19,7 @@ class FileUploader {
     private string $captcha_secret;
     private string $upload_password;
     private FileValidator $file_validator;
+
     public function __construct(string $upload_directory, string $file_prefix,
                                 string $extension, FileValidator $file_validator,
                                 string $captcha_secret, string $upload_password)
@@ -32,7 +34,8 @@ class FileUploader {
         static::$count++;
     }
 
-    public function get_last_upload(): string {
+    public function get_last_upload(): string
+    {
         if (!is_dir($this->upload_directory)) {
             return "";
         }
@@ -47,14 +50,15 @@ class FileUploader {
                 if (is_dir($f)) {
                     continue;
                 }
-                if (preg_match("/^".$this->file_prefix."/", $f)) {
+                if (preg_match("/^" . $this->file_prefix . "/", $f)) {
                     try {
                         $dt = new DateTime(explode(".", explode("_", $f)[1])[0],
                             new DateTimeZone('Europe/Prague'));
                         if (!$last || ($dt > $last)) {
                             $last = $dt;
                         }
-                    } catch (Exception $e) {}
+                    } catch (Exception $e) {
+                    }
                 }
             }
             if (!$last) {
@@ -74,7 +78,8 @@ class FileUploader {
         }
     }
 
-    private function validate_captcha(): bool {
+    private function validate_captcha(): bool
+    {
         if (!$this->captcha_secret) {
             return true;
         }
@@ -96,11 +101,14 @@ class FileUploader {
             return false;
         }
     }
-    public function current_upload_status(): string {
+
+    public function current_upload_status(): string
+    {
         return $this->upload_status;
     }
 
-    public function handle_upload(): void {
+    public function handle_upload(): void
+    {
         if (!key_exists('sent', $_POST) || !$_POST['sent']) {
             return;
         }
@@ -136,31 +144,42 @@ class FileUploader {
                 $this->file_prefix .
                 '_' .
                 (new DateTime('now', new DateTimeZone('Europe/Prague')))->format("c") .
-                '.'.
+                '.' .
                 $this->extension;
 
             move_uploaded_file($f['tmp_name'], $new_filename);
             $this->upload_status = UploadStatus::UPLOAD_SUCCESS;
-        } catch (Exception $e) {$this->upload_status = UploadStatus::UPLOAD_ERROR;}
-    }
-
-    public function get_upload_status(?string $calendarVisitLink = null): string {
-        switch ($this->upload_status) {
-            case UploadStatus::UPLOAD_NO_FILE: return "<div class='alert alert-info'>Nebyl zvolen žádný soubor k nahrání.</div>";
-            case UploadStatus::UPLOAD_SUCCESS: return "<div class='alert alert-success'>Soubor byl úspěšně nahrán."
-                . ($calendarVisitLink
-                    ? "<br/>Pro zobrazení nového kalendáře můžete kliknout <a href='$calendarVisitLink'>zde</a>."
-                    : "") ."</div>";
-            case UploadStatus::UPLOAD_ERROR: return "<div class='alert alert-danger'>Během nahrávání souboru nastala chyba.</div>";
-            case UploadStatus::UPLOAD_UNAUTHORIZED: return "<div class='alert alert-danger'>Neplatné heslo.</div>";
-            case UploadStatus::UPLOAD_CAPTCHA_FAILED: return "<div class='alert alert-danger'>Jste robot.</div>";
-            case UploadStatus::UPLOAD_WRONG_FORMAT: return "<div class='alert alert-danger'>Vámi nahraný soubor není ve správném formátu." .
-                $this->file_validator->get_error_help() . "</div>";
-            default: return "";
+        } catch (Exception $e) {
+            $this->upload_status = UploadStatus::UPLOAD_ERROR;
         }
     }
 
-    public function generate_form(string $action, string $site_key): string {
+    public function get_upload_status(?string $calendarVisitLink = null): string
+    {
+        switch ($this->upload_status) {
+            case UploadStatus::UPLOAD_NO_FILE:
+                return "<div class='alert alert-info'>Nebyl zvolen žádný soubor k nahrání.</div>";
+            case UploadStatus::UPLOAD_SUCCESS:
+                return "<div class='alert alert-success'>Soubor byl úspěšně nahrán."
+                    . ($calendarVisitLink
+                        ? "<br/>Pro zobrazení nového kalendáře můžete kliknout <a href='$calendarVisitLink'>zde</a>."
+                        : "") . "</div>";
+            case UploadStatus::UPLOAD_ERROR:
+                return "<div class='alert alert-danger'>Během nahrávání souboru nastala chyba.</div>";
+            case UploadStatus::UPLOAD_UNAUTHORIZED:
+                return "<div class='alert alert-danger'>Neplatné heslo.</div>";
+            case UploadStatus::UPLOAD_CAPTCHA_FAILED:
+                return "<div class='alert alert-danger'>Jste robot.</div>";
+            case UploadStatus::UPLOAD_WRONG_FORMAT:
+                return "<div class='alert alert-danger'>Vámi nahraný soubor není ve správném formátu." .
+                    $this->file_validator->get_error_help() . "</div>";
+            default:
+                return "";
+        }
+    }
+
+    public function generate_form(string $action, string $site_key): string
+    {
         $f = $this->file_prefix;
         $e = $this->extension;
         $c = self::$count;

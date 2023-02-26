@@ -8,7 +8,9 @@ use IntlDateFormatter;
 
 class DateFunctions
 {
-    private function __construct() {}
+    private function __construct()
+    {
+    }
 
     /**
      * @param string|int|null $date_original date string or excel calculated value
@@ -16,11 +18,12 @@ class DateFunctions
      * @return DateTime[]
      * @throws InvalidDateFormatException when date couldn't be formatted
      */
-    public static function parse_date($date_original, string $timezone = "Europe/Prague"): array {
+    public static function parse_date($date_original, string $timezone = "Europe/Prague"): array
+    {
         if (is_null($date_original)) {
             throw new InvalidDateFormatException("date must not be null");
         }
-        if (is_numeric($date_original)) {
+        if (is_int($date_original)) {
             $UNIX_DATE = (int)(($date_original - 25569) * 86400);
             if (($d = DateTime::createFromFormat("U", $UNIX_DATE, new DateTimeZone($timezone)))) {
                 return array($d);
@@ -52,7 +55,8 @@ class DateFunctions
      * @return string
      * @throws InvalidDateFormatException when date couldn't be formatted
      */
-    public static function format_date($date_original, IntlDateFormatter $formatter): string {
+    public static function format_date($date_original, IntlDateFormatter $formatter): string
+    {
         $dates = self::parse_date($date_original);
         return implode(" - ", array_map(function ($date) use ($formatter) {
             return $formatter->format($date);
