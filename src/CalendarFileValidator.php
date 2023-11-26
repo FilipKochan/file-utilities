@@ -2,6 +2,7 @@
 
 namespace FilipKochan\FileUtilities;
 
+use FilipKochan\FileUtilities\utils\ReaderUtils;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 
 class CalendarFileValidator implements FileValidator
@@ -16,7 +17,8 @@ class CalendarFileValidator implements FileValidator
     /**
      * @param TableHeaderField[] $fields
      */
-    public function __construct(array $fields, ?RowValidator $row_validator = null) {
+    public function __construct(array $fields, ?RowValidator $row_validator = null)
+    {
         if (!self::$has_reader) {
             self::$reader = new Xlsx();
             self::$has_reader = true;
@@ -26,9 +28,11 @@ class CalendarFileValidator implements FileValidator
         $this->status = FileValidationStatus::FILE_IDLE;
     }
 
-    public function is_valid(string $file): bool {
+    public function is_valid(string $file): bool
+    {
         try {
             $sheet = self::$reader->load($file)->getActiveSheet();
+            ReaderUtils::complete_merged_cells($sheet);
             $start_index = -1;
             foreach ($sheet->getRowIterator() as $row) {
                 $is_valid = true;
@@ -86,32 +90,35 @@ class CalendarFileValidator implements FileValidator
         }
     }
 
-    public function get_rules(): string {
+    public function get_rules(): string
+    {
         return "<div>
                     <h2 class='fs-5'>Formát souboru:</h2>
                     <p>Tabulka se sloupci " .
             implode(", ", array_map(function ($item) {
                 return "<code>" . $item->name . "</code>";
-                }, $this->fields)) . ".</p><p>Musí začínat od sloupce <code>A</code> na libovolném řádku."
-            .($this->row_validator? $this->row_validator->get_rules():"")."</div>";
+            }, $this->fields)) . ".</p><p>Musí začínat od sloupce <code>A</code> na libovolném řádku."
+            . ($this->row_validator ? $this->row_validator->get_rules() : "") . "</div>";
     }
 
     public function get_error_help(): string
     {
         switch ($this->status) {
             case FileValidationStatus::FILE_INCORRECTLY_FORMATTED:
-                return "<p>Ujistěte se, že nahrávaný soubor obsahuje tabulku se sloupci<ul>".
-                implode("\n", array_map(function ($item) {
-                    return "<li><code>" . $item->name . "</code></li>";
-                }, $this->fields)) .
-                "</ul>v tomto pořadí.</p>";
+                return "<p>Ujistěte se, že nahrávaný soubor obsahuje tabulku se sloupci<ul>" .
+                    implode("\n", array_map(function ($item) {
+                        return "<li><code>" . $item->name . "</code></li>";
+                    }, $this->fields)) .
+                    "</ul>v tomto pořadí.</p>";
             case FileValidationStatus::FILE_ERROR:
                 return "<p>Při nahrávání souboru nastala chyba. Zkuste to prosím později.</p>";
             case FileValidationStatus::FILE_INVALID_ROW:
-                return ($this->row_validator->get_error_help()).
+                return ($this->row_validator->get_error_help()) .
                     "<p>na řádcích:</p>
-                    <ul>".
-                            implode("\n", array_map(function ($item){return "<li><code>$item</code></li>";},$this->invalid_rows)).
+                    <ul>" .
+                    implode("\n", array_map(function ($item) {
+                        return "<li><code>$item</code></li>";
+                    }, $this->invalid_rows)) .
                     "</ul>";
             case FileValidationStatus::FILE_SUCCESS:
             case FileValidationStatus::FILE_IDLE:

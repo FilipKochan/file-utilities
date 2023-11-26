@@ -3,6 +3,7 @@
 namespace FilipKochan\FileUtilities;
 
 use Exception;
+use FilipKochan\FileUtilities\utils\ReaderUtils;
 use IntlDateFormatter;
 use DateTimeZone;
 use DateTime;
@@ -10,7 +11,8 @@ use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 use PhpOffice\PhpSpreadsheet\Worksheet\Row;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class ExcelReader {
+class ExcelReader
+{
     private int $row;
     private int $data_start;
     private array $fields;
@@ -28,10 +30,10 @@ class ExcelReader {
      * @param RowFilter|null $rf which rows will be hidden
      * @throws Exception
      */
-    public function __construct(string $directory,
-                                array $fields,
+    public function __construct(string       $directory,
+                                array        $fields,
                                 FileSelector $fs,
-                                ?RowFilter $rf = null)
+                                ?RowFilter   $rf = null)
     {
         if (!static::$reader_set) {
             static::$reader = new Xlsx();
@@ -45,19 +47,23 @@ class ExcelReader {
             $this->rf = $rf;
         } else {
             $this->rf = (new class implements RowFilter {
-                public function keep_row(Row $row): bool {return true;}
+                public function keep_row(Row $row): bool
+                {
+                    return true;
+                }
             });
         }
         try {
             $active_calendar = $this->fs->get_filename($directory);
             if ($active_calendar) {
-                $this->sheet = static::$reader->load($directory.DIRECTORY_SEPARATOR.$active_calendar)->getActiveSheet();
+                $this->sheet = static::$reader->load($directory . DIRECTORY_SEPARATOR . $active_calendar)->getActiveSheet();
             }
         } catch (\PhpOffice\PhpSpreadsheet\Reader\Exception $exception) {
             echo $exception->getMessage();
             throw new Exception("<p>Při načítání kalendáře došlo k chybě.</p>");
         }
         $ds = $this->find_data_start();
+        ReaderUtils::complete_merged_cells($this->sheet);
         $this->row = $ds;
         $this->data_start = $ds;
     }
@@ -66,7 +72,8 @@ class ExcelReader {
      * returns the `thead` element according to `fields`
      * @return string table header
      */
-    private function get_header() : string {
+    private function get_header(): string
+    {
         return "<thead><tr>" . implode('', $this->fields) . "</tr></thead>";
     }
 
@@ -75,7 +82,8 @@ class ExcelReader {
      * the data is wrapped in `tr` element with fields as `td`
      * @return string row
      */
-    private function get_row() : string {
+    private function get_row(): string
+    {
         if (!$this->sheet) {
             return "";
         }
@@ -117,7 +125,8 @@ class ExcelReader {
     /**
      * @throws Exception
      */
-    private function find_data_start(): int {
+    private function find_data_start(): int
+    {
         if (!$this->sheet) {
             return 0;
         }
@@ -146,7 +155,8 @@ class ExcelReader {
      * resets the position of next row to be read back to start
      * @return void
      */
-    private function reset_position() : void {
+    private function reset_position(): void
+    {
         $this->row = $this->data_start;
     }
 
@@ -155,7 +165,8 @@ class ExcelReader {
      * @return string last modified date in format "aktualizace: <$tag_name>'datum aktualizace'&lt;/$tag_name>".
      * if date couldn't be found, returns an empty string
      */
-    public function get_modified_date(string $tag_name = "i") : string {
+    public function get_modified_date(string $tag_name = "i"): string
+    {
         try {
             if (!($file = $this->fs->get_filename($this->files_directory))) {
                 return "";
@@ -170,7 +181,9 @@ class ExcelReader {
                 new DateTimeZone('Europe/Prague')));
 
             return "<p>Poslední aktualizace: <$tag_name>$date</$tag_name>.</p>";
-        } catch (Exception $e) {return "";}
+        } catch (Exception $e) {
+            return "";
+        }
     }
 
     /**
@@ -178,7 +191,8 @@ class ExcelReader {
      * @param string $class css class applied to `table`
      * @return string table
      */
-    public function get_table(string $class = "") : string {
+    public function get_table(string $class = ""): string
+    {
         if (!$this->sheet) {
             return "<p>Žádný kalendář není k dispozici.</p>";
         }
