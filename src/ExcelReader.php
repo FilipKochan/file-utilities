@@ -138,7 +138,7 @@ class ExcelReader
                     break;
                 }
 
-                if (strtoupper(trim($cell->getFormattedValue())) !== strtoupper(trim($this->fields[$i++]->name))) {
+                if (mb_strtoupper(trim($cell->getFormattedValue())) !== mb_strtoupper(trim($this->fields[$i++]->name))) {
                     $is_header = false;
                     break;
                 }
